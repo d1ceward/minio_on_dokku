@@ -17,6 +17,7 @@ you've ever seen - _Docker powered mini-Heroku_.
 
 ### Requirements
 * A working [Dokku host](http://dokku.viewdocs.io/dokku/getting-started/installation/)
+* [Letsencrypt](https://github.com/dokku/dokku-letsencrypt) plugin for SSL (optionnal)
 
 # Setup
 
@@ -133,10 +134,16 @@ Last but not least, we can go an grab the SSL certificate from [Let's
 Encrypt](https://letsencrypt.org/).
 
 ```bash
+# Install letsencrypt plugin
+dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
+
+# Set certificate contact email
 dokku config:set --no-restart minio DOKKU_LETSENCRYPT_EMAIL=you@example.com
+
+# Generate certificate
 dokku letsencrypt minio
 ```
 
 ## Wrapping up
 
-Your Minio instance should now be available on `[https://minio.example.com](https://minio.example.com)`.
+Your Minio instance should now be available on [https://minio.example.com](https://minio.example.com).
