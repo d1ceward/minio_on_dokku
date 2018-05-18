@@ -1,6 +1,6 @@
 ![](images/repo_header.png)
 
-[![Minio Version](https://img.shields.io/badge/Minio_version-16/05/2018-green.svg)](https://shields.io/) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![Minio Version](https://img.shields.io/badge/Minio_version-16/05/2018-green.svg)](https://github.com/minio/minio/releases/tag/RELEASE.2018-05-16T23-35-33Z) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 # Run Minio on Dokku
 
 ## Perquisites
