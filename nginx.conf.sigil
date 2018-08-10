@@ -1,4 +1,4 @@
-client_max_body_size 1000m;
+client_max_body_size 2500m;
 
 {{ range $port_map := .PROXY_PORT_MAP | split " " }}
 {{ $port_map_list := $port_map | split ":" }}
