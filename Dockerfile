@@ -8,4 +8,4 @@ USER dokku
 RUN mkdir -p /home/dokku/data
 
 # Run the server and point to the created directory
-CMD ['server', '--address', ':5000', '/home/dokku/data']
+CMD ["server", "--address", ":5000", "/home/dokku/data"]
