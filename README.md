@@ -74,14 +74,6 @@ the domain.
 dokku domains:set minio minio.example.com
 ```
 
-## Nginx setup
-
-Add client_max_body_size rule to prevent issue with web interface uploads. (uploads stuck at 100%)
-
-```bash
-echo "client_max_body_size 1000m;" > /home/dokku/minio/nginx.conf.d/upload.conf
-```
-
 ## Push Minio to Dokku
 
 ### Grabbing the repository
