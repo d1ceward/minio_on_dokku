@@ -1,11 +1,11 @@
 FROM minio/minio:RELEASE.2018-07-31T02-11-47Z
 
 # Add user dokku
-RUN adduser -D -g dokku dokku
+RUN adduser -D -u 32769 -g dokku dokku
 USER dokku
 
-# Create data directory for the user, where we will keep the data
-RUN mkdir -p /home/dokku/data
+# Change workdir
+WORKDIR /home/dokku
 
 # Run the server and point to the created directory
-CMD ["server", "/home/dokku/data"]
+CMD ["server", "--address", ":5000", "/home/dokku/data"]
