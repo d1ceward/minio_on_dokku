@@ -6,7 +6,5 @@ USER dokku
 
 WORKDIR /home/dokku
 
-ADD nginx.conf.sigil .
-
 # Run the server and point to the created directory
 CMD ['server', '--address', ':5000', '/home/dokku/data']
