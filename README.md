@@ -1,6 +1,6 @@
 ![](.github/images/repo_header.png)
 
-[![Minio Version](https://img.shields.io/badge/Minio_version-31/07/2018-blue.svg)](https://github.com/minio/minio/releases/tag/RELEASE.2018-07-31T02-11-47Z) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/D1ceWard/minio_on_dokku/graphs/commit-activity)
+[![Minio Version](https://img.shields.io/badge/Minio_version-02/08/2018-blue.svg)](https://github.com/minio/minio/releases/tag/RELEASE.2018-08-02T23-11-36Z) [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/D1ceWard/minio_on_dokku/graphs/commit-activity)
 # Run Minio on Dokku
 
 ## Perquisites
@@ -61,7 +61,7 @@ Dokku to mount it to the app container.
 
 ```bash
 sudo mkdir -p /var/lib/dokku/data/storage/minio
-sudo chown dokku:dokku /var/lib/dokku/data/storage/minio
+sudo chown 32769:32769 /var/lib/dokku/data/storage/minio
 dokku storage:mount minio /var/lib/dokku/data/storage/minio:/home/dokku/data
 ```
 
@@ -72,26 +72,6 @@ the domain.
 
 ```bash
 dokku domains:set minio minio.example.com
-```
-
-The parent Dockerfile, provided by the [Minio
-project](https://github.com/minio/minio), exposes port `9000` for web requests.
-Dokku will set up this port for outside communication, as explained in [its
-documentation](http://dokku.viewdocs.io/dokku/advanced-usage/proxy-management/#proxy-port-mapping).
-Because we want Minio to be available on the default port `80` (or `443` for
-SSL), we need to fiddle around with the proxy settings.
-
-First add the correct port mapping for this project as defined in the parent
-`Dockerfile`.
-
-```bash
-dokku proxy:ports-add minio http:80:9000
-```
-
-Next remove the proxy mapping added by Dokku.
-
-```bash
-dokku proxy:ports-remove minio http:80:5000
 ```
 
 ## Push Minio to Dokku
