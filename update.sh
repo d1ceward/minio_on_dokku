@@ -1,5 +1,13 @@
+# Get current release name
+CURRENT_RELEASE=$(git tag | tail -1)
+
 # Get lastest release name
 RELEASE=$(curl --silent "https://github.com/minio/minio/releases/latest" | sed 's#.*tag/\(.*\)\".*#\1#')
+
+# Exit script if already up to date
+if [ $RELEASE = $CURRENT_RELEASE ]; then
+  exit 0
+fi
 
 # Extract date from release name
 RELEASE_DATE=$(date -d $(echo $RELEASE | cut -f2 -d '.' | cut -f1 -d 'T') +%d/%m/%Y)
