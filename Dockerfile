@@ -1,4 +1,4 @@
-FROM minio/minio:RELEASE.2020-01-16T22-40-29Z
+FROM minio/minio:RELEASE.2020-01-25T02-50-51Z
 
 # Add user dokku
 RUN adduser -D -u 32769 -g dokku dokku
