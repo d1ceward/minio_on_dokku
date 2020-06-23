@@ -1,6 +1,6 @@
 ![](.github/images/repo_header.png)
 
-[![Minio](https://img.shields.io/badge/Minio-03/06/2020-blue.svg)](https://github.com/minio/minio/releases/tag/RELEASE.2020-06-03T22-13-49Z)
+[![Minio](https://img.shields.io/badge/Minio-22/06/2020-blue.svg)](https://github.com/minio/minio/releases/tag/RELEASE.2020-06-22T03-12-50Z)
 [![Dokku](https://img.shields.io/badge/Dokku-Repo-blue.svg)](https://github.com/dokku/dokku)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/D1ceWard/minio_on_dokku/graphs/commit-activity)
 # Run Minio on Dokku
