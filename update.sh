@@ -1,3 +1,6 @@
+# Pull upstream changes
+git pull
+
 # Get current release name
 CURRENT_RELEASE=$(git tag | tail -1)
 
