@@ -2,7 +2,7 @@
 
 [![Minio](https://img.shields.io/badge/Minio-26/05/2021-blue.svg)](https://github.com/minio/minio/releases/tag/RELEASE.2021-05-26T00-22-46Z)
 [![Dokku](https://img.shields.io/badge/Dokku-Repo-blue.svg)](https://github.com/dokku/dokku)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-no-red.svg)](https://github.com/D1ceWard/minio_on_dokku/graphs/commit-activity)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/D1ceWard/minio_on_dokku/graphs/commit-activity)
 # Run Minio on Dokku
 
 ## Perquisites
@@ -51,15 +51,21 @@ retrieve these at any time while logged in on your host running dokku via `dokku
 **Note:** If you do not set these keys, Minio will generate them during startup and output them to the log
 (check if via `dokku logs minio`). You will still need to set them manually.
 
+### Change the upload size limit
+
+To modify the upload limit you have to modify the environment variable CLIENT_MAX_BODY_SIZE used by Dokku, here we have given the max value of 10mb
+```bash
+dokku config:set --no-restart minio CLIENT_MAX_BODY_SIZE=10M
+```
+
 ## Persistent storage
 
 To persists uploaded data between restarts, we create a folder on the host machine, add write permissions to
 the user defined in `Dockerfile` and tell Dokku to mount it to the app container.
 
 ```bash
-sudo mkdir -p /var/lib/dokku/data/storage/minio
-sudo chown 32769:32769 /var/lib/dokku/data/storage/minio
-dokku storage:mount minio /var/lib/dokku/data/storage/minio:/home/dokku/data
+dokku storage:ensure-directory minio
+dokku storage:mount minio /var/lib/dokku/data/storage/minio:/data
 ```
 
 ## Domain setup
