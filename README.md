@@ -35,27 +35,20 @@ dokku apps:create minio
 
 ## Configuration
 
-### Setting access keys
+### Setting root user
 
-Minio uses two access keys (`ACCESS_KEY` and `SECRET_KEY`) for authentication and object management. The
-following commands sets a random strings for each access key.
+Minio use username/password (`MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`) for authentication and object management.
 
 ```bash
-dokku config:set minio MINIO_ACCESS_KEY=$(echo `openssl rand -base64 45` | tr -d \=+ | cut -c 1-20)
-dokku config:set minio MINIO_SECRET_KEY=$(echo `openssl rand -base64 45` | tr -d \=+ | cut -c 1-32)
+dokku config:set minio MINIO_ROOT_USER=<username>
+dokku config:set minio MINIO_ROOT_PASSWORD=<password>
 ```
-
-To login in the browser or via API, you will need to supply both the `ACCESS_KEY` and `SECRET_KEY`. You can
-retrieve these at any time while logged in on your host running dokku via `dokku config minio`.
-
-**Note:** If you do not set these keys, Minio will generate them during startup and output them to the log
-(check if via `dokku logs minio`). You will still need to set them manually.
 
 ### Change the upload size limit
 
 To modify the upload limit you have to modify the environment variable CLIENT_MAX_BODY_SIZE used by Dokku, here we have given the max value of 10mb
 ```bash
-dokku config:set --no-restart minio CLIENT_MAX_BODY_SIZE=10M
+dokku config:set minio CLIENT_MAX_BODY_SIZE=10M
 ```
 
 ## Persistent storage
