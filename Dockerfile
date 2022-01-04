@@ -1,4 +1,4 @@
-FROM minio/minio:RELEASE.2021-12-29T06-49-06Z
+FROM minio/minio:RELEASE.2022-01-03T18-22-58Z
 
 # Add user/group dokku
 RUN groupadd -g 32767 dokku
