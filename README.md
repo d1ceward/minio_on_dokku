@@ -115,7 +115,7 @@ dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
 dokku config:set --no-restart minio DOKKU_LETSENCRYPT_EMAIL=you@example.com
 
 # Generate certificate
-dokku letsencrypt minio
+dokku letsencrypt:enable minio
 ```
 
 ## Wrapping up
