@@ -20,10 +20,11 @@ ENV MINIO_ACCESS_KEY_FILE=access_key \
     MINIO_CONFIG_ENV_FILE=config.env \
     PATH=/opt/bin:$PATH
 
-COPY minio/dockerscripts/verify-minio.sh /usr/bin/verify-minio.sh
-COPY minio/dockerscripts/docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
-COPY minio/CREDITS /licenses/CREDITS
-COPY minio/LICENSE /licenses/LICENSE
+RUN \
+    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/verify-minio.sh -o /usr/bin/verify-minio.sh && \
+    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/docker-entrypoint.sh -o /usr/bin/docker-entrypoint.sh && \
+    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CREDITS -o /licenses/CREDITS && \
+    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/LICENSE -o /licenses/LICENSE
 
 RUN \
      microdnf clean all && \
