@@ -22,7 +22,10 @@ ENV MINIO_ACCESS_KEY_FILE=access_key \
 
 RUN \
     curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/verify-minio.sh -o /usr/bin/verify-minio.sh && \
-    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/docker-entrypoint.sh -o /usr/bin/docker-entrypoint.sh && \
+    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/docker-entrypoint.sh -o /usr/bin/docker-entrypoint.sh
+
+RUN \
+    mkdir /licenses && \
     curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CREDITS -o /licenses/CREDITS && \
     curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/LICENSE -o /licenses/LICENSE
 
