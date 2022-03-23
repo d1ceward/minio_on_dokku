@@ -25,7 +25,7 @@ RUN \
     curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/docker-entrypoint.sh -o /usr/bin/docker-entrypoint.sh
 
 RUN \
-    mkdir /licenses && \
+    mkdir -p /licenses && \
     curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CREDITS -o /licenses/CREDITS && \
     curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/LICENSE -o /licenses/LICENSE
 
