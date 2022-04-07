@@ -46,8 +46,6 @@ RUN \
      /usr/bin/verify-minio.sh && \
      microdnf clean all
 
-EXPOSE 9000
-
 ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
 
 # Add user/group dokku
@@ -56,4 +54,4 @@ RUN adduser -u 32767 -g dokku dokku
 USER dokku
 
 # Run the server and point to the created directory
-CMD ["server", "--address", ":9000", "--console-address", ":5000", "/data"]
+CMD ["server", "--address", ":5000", "--console-address", ":5001", "/data"]
