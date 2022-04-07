@@ -54,4 +54,4 @@ RUN adduser -u 32767 -g dokku dokku
 USER dokku
 
 # Run the server and point to the created directory
-CMD ["server", "--address", ":5000", "--console-address", ":5001", "/data"]
+CMD ["server", "--address", ":5000", "--console-address", ":8080", "/data"]
