@@ -121,3 +121,14 @@ dokku letsencrypt:enable minio
 ## Wrapping up
 
 Your Minio instance should now be available on [https://minio.example.com](https://minio.example.com).
+
+To allow access to the Minio web console :
+```bash
+# If ssl enabled
+dokku proxy:ports-add minio https:8443:8443
+
+# If ssl disabled (note scheme change)
+dokku proxy:ports-add minio http:8443:8443
+```
+
+And go to [https://minio.example.com:8443](https://minio.example.com:8443)
