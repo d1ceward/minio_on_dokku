@@ -8,7 +8,7 @@ echo -e "\033[0;32m====>\033[0m Initial check..."
 CURRENT_RELEASE=$(git tag | tail -1)
 
 # Get lastest release name
-RELEASE=$(curl --silent "https://github.com/minio/minio/releases/latest" | sed 's#.*tag/\(.*\)\".*#\1#')
+RELEASE=$(curl --silent "https://api.github.com/repos/minio/minio/releases/latest" | jq -r ".tag_name")
 
 # Exit script if already up to date
 if [ $RELEASE = $CURRENT_RELEASE ]; then
