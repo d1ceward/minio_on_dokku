@@ -1,6 +1,7 @@
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/D1ceWard/minio_on_dokku. By contributing you agree to abide by the Code of Merit.
+Bug reports and pull requests are welcome on GitHub at https://github.com/d1ceward/minio_on_dokku.
+By contributing you agree to abide by the Code of Merit.
 
 Example :
 
