@@ -132,3 +132,11 @@ dokku proxy:ports-add minio http:8443:8443
 ```
 
 And go to [https://minio.example.com:8443](https://minio.example.com:8443)
+
+To fix the problem of share links from the console pointing to the docker container ip :
+```bash
+dokku config:set minio \
+  MINIO_SERVER_URL=https://minio.example.com \
+  MINIO_BROWSER_REDIRECT_URL=https://minio.example.com:8443
+```
+
