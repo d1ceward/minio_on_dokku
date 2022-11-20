@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6
 
-ARG MINIO_VERSION="RELEASE.2022-11-11T03-44-20Z"
+ARG MINIO_VERSION="RELEASE.2022-11-17T23-20-09Z"
 ARG TARGETARCH="amd64"
 
 LABEL name="MinIO" \
