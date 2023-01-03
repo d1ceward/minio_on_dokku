@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.7
 
 ARG MINIO_VERSION="RELEASE.2022-12-12T19-27-27Z"
 ARG TARGETARCH="amd64"
