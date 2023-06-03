@@ -32,9 +32,8 @@ RUN \
 RUN \
      microdnf clean all && \
      microdnf update --nodocs && \
-     microdnf install curl ca-certificates shadow-utils util-linux gzip lsof tar net-tools iproute iputils jq minisign --nodocs && \
      rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
-     microdnf install minisign --nodocs && \
+     microdnf install curl ca-certificates shadow-utils util-linux gzip lsof tar net-tools iproute iputils jq minisign --nodocs && \
      mkdir -p /opt/bin && chmod -R 777 /opt/bin && \
      curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${MINIO_VERSION} -o /opt/bin/minio && \
      curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${MINIO_VERSION}.sha256sum -o /opt/bin/minio.sha256sum && \
