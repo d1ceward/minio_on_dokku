@@ -9,13 +9,11 @@
 
 ### What is Minio?
 
-Minio is an object storage server, and API compatible with Amazon S3 cloud storage service. Read more at the
-[minio.io](https://www.minio.io/) website.
+Minio is an object storage server that is API compatible with the Amazon S3 cloud storage service. You can find more information about Minio on the [minio.io](https://www.minio.io/) website.
 
 ### What is Dokku?
 
-[Dokku](http://dokku.viewdocs.io/dokku/) is the smallest PaaS implementation you've ever seen - _Docker
-powered mini-Heroku_.
+[Dokku](http://dokku.viewdocs.io/dokku/) is a lightweight implementation of a Platform as a Service (PaaS) that is powered by Docker. It can be thought of as a mini-Heroku.
 
 ### Requirements
 * A working [Dokku host](http://dokku.viewdocs.io/dokku/getting-started/installation/)
@@ -23,11 +21,11 @@ powered mini-Heroku_.
 
 # Setup
 
-**Note:** We are going to use the domain `minio.example.com` for demonstration purposes. Make sure to replace
-it to your domain name.
+**Note:** Throughout this guide, we will use the domain `minio.example.com` for demonstration purposes. Make sure to replace it with your actual domain name.
 
 ## Create the app
-Log onto your Dokku Host to create the Minio app:
+
+Log into your Dokku host and create the Minio app:
 
 ```bash
 dokku apps:create minio
@@ -37,24 +35,24 @@ dokku apps:create minio
 
 ### Setting root user
 
-Minio use username/password (`MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`) for authentication and object management.
+Minio uses a username/password combination (`MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`) for authentication and object management. Set these environment variables using the following commands:
 
 ```bash
 dokku config:set minio MINIO_ROOT_USER=<username>
 dokku config:set minio MINIO_ROOT_PASSWORD=<password>
 ```
 
-### Change the upload size limit
+### Increase the upload size limit
 
-To modify the upload limit you have to modify the environment variable CLIENT_MAX_BODY_SIZE used by Dokku, here we have given the max value of 10mb
+To modify the upload limit, you need to adjust the `CLIENT_MAX_BODY_SIZE` environment variable used by Dokku. In this example, we set it to a maximum value of 10MB:
+
 ```bash
 dokku config:set minio CLIENT_MAX_BODY_SIZE=10M
 ```
 
 ## Persistent storage
 
-To persists uploaded data between restarts, we create a folder on the host machine, add write permissions to
-the user defined in `Dockerfile` and tell Dokku to mount it to the app container.
+To ensure that uploaded data persists between restarts, we create a folder on the host machine, grant write permissions to the user defined in the Dockerfile, and instruct Dokku to mount it to the app container. Follow these steps:
 
 ```bash
 dokku storage:ensure-directory minio
@@ -63,7 +61,7 @@ dokku storage:mount minio /var/lib/dokku/data/storage/minio:/data
 
 ## Domain setup
 
-To get the routing working, we need to apply a few settings. First we set the domain.
+To enable routing for the Minio app, we need to configure the domain. Execute the following command:
 
 ```bash
 dokku domains:set minio minio.example.com
@@ -73,7 +71,7 @@ dokku domains:set minio minio.example.com
 
 ### Grabbing the repository
 
-First clone this repository onto your machine.
+Begin by cloning this repository onto your local machine.
 
 #### Via SSH
 
@@ -89,7 +87,7 @@ git clone https://github.com/d1ceward/minio_on_dokku.git
 
 ### Set up git remote
 
-Now you need to set up your Dokku server as a remote.
+Now, set up your Dokku server as a remote repository.
 
 ```bash
 git remote add dokku dokku@example.com:minio
@@ -97,7 +95,7 @@ git remote add dokku dokku@example.com:minio
 
 ### Push Minio
 
-Now we can push Minio to Dokku (_before_ moving on to the [next part](#domain-and-ssl-certificate)).
+Now, you can push the Minio app to Dokku. Ensure you have completed this step before moving on to the [next section](#ssl-certificate).
 
 ```bash
 git push dokku master
@@ -105,7 +103,7 @@ git push dokku master
 
 ## SSL certificate
 
-Last but not least, we can go an grab the SSL certificate from [Let's Encrypt](https://letsencrypt.org/).
+Lastly, let's obtain an SSL certificate from [Let's Encrypt](https://letsencrypt.org/).
 
 ```bash
 # Install letsencrypt plugin
@@ -120,23 +118,32 @@ dokku letsencrypt:enable minio
 
 ## Wrapping up
 
-Your Minio instance should now be available on [https://minio.example.com](https://minio.example.com).
+Congratulations! Your Minio instance is now up and running, and you can access it at [https://minio.example.com](https://minio.example.com).
 
-To allow access to the Minio web console :
+### Minio web console
+
+To access the Minio web console and manage your files, you need to configure the necessary proxy settings. The following commands will help you set it up:
+
 ```bash
 # If ssl enabled
-dokku proxy:ports-add minio https:8443:8443
+dokku proxy:ports-add minio https:<desired_port>:9001
 
 # If ssl disabled (note scheme change)
-dokku proxy:ports-add minio http:8443:8443
+dokku proxy:ports-add minio http:<desired_port>:9001
 ```
 
-And go to [https://minio.example.com:8443](https://minio.example.com:8443)
+Replace <desired_port> with the port number you prefer. By default, Minio uses port 9001.
 
-To fix the problem of share links from the console pointing to the docker container ip :
+After setting up the proxy, you can access the Minio web console by visiting https://minio.example.com:<desired_port> in your web browser.
+
+To resolve an issue with share links generated by the console pointing to the Docker container IP instead of your Minio instance, you can use the following command:
+
 ```bash
 dokku config:set minio \
   MINIO_SERVER_URL=https://minio.example.com \
   MINIO_BROWSER_REDIRECT_URL=https://minio.example.com:8443
 ```
 
+This command sets the appropriate environment variables to ensure that share links correctly point to your Minio instance at https://minio.example.com and utilize the configured port.
+
+Now you're all set to use Minio and leverage its powerful features for your storage needs. Happy file management!
