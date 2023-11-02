@@ -1,7 +1,32 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8
+FROM golang:1.21-alpine as build
+
+ARG TARGETARCH="amd64"
+ARG MINIO_VERSION="RELEASE.2023-10-25T06-33-25Z"
+
+ENV GOPATH /go
+ENV CGO_ENABLED 0
+
+# Install curl and minisign
+RUN apk add -U --no-cache ca-certificates && \
+    apk add -U --no-cache curl && \
+    go install aead.dev/minisign/cmd/minisign@v0.2.0
+
+# Download minio binary and signature file
+RUN curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${MINIO_VERSION} -o /go/bin/minio && \
+    curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${MINIO_VERSION}.minisig -o /go/bin/minio.minisig && \
+    chmod +x /go/bin/minio
+
+# Download mc binary and signature file
+RUN curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc -o /go/bin/mc && \
+    curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc.minisig -o /go/bin/mc.minisig
+
+# Verify binary signature using public key "RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGavRUN"
+RUN minisign -Vqm /go/bin/minio -x /go/bin/minio.minisig -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav && \
+    minisign -Vqm /go/bin/mc -x /go/bin/mc.minisig -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav
+
+FROM registry.access.redhat.com/ubi9/ubi-micro:9.2
 
 ARG MINIO_VERSION="RELEASE.2023-10-25T06-33-25Z"
-ARG TARGETARCH="amd64"
 
 LABEL name="MinIO" \
       vendor="MinIO Inc <dev@min.io>" \
@@ -18,34 +43,18 @@ ENV MINIO_ACCESS_KEY_FILE=access_key \
     MINIO_KMS_SECRET_KEY_FILE=kms_master_key \
     MINIO_UPDATE_MINISIGN_PUBKEY="RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav" \
     MINIO_CONFIG_ENV_FILE=config.env \
-    PATH=/opt/bin:$PATH
+    MC_CONFIG_DIR=/tmp/.mc
 
-RUN \
-    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/verify-minio.sh -o /usr/bin/verify-minio.sh && \
-    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/docker-entrypoint.sh -o /usr/bin/docker-entrypoint.sh
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /go/bin/minio /usr/bin/minio
+COPY --from=build /go/bin/mc /usr/bin/mc
+
+RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/docker-entrypoint.sh -o /usr/bin/docker-entrypoint.sh
 
 RUN \
     mkdir -p /licenses && \
     curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CREDITS -o /licenses/CREDITS && \
     curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/LICENSE -o /licenses/LICENSE
-
-RUN \
-     microdnf clean all && \
-     microdnf update --nodocs && \
-     rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
-     microdnf install curl ca-certificates shadow-utils util-linux gzip lsof tar net-tools iproute iputils jq minisign --nodocs && \
-     mkdir -p /opt/bin && chmod -R 777 /opt/bin && \
-     curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${MINIO_VERSION} -o /opt/bin/minio && \
-     curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${MINIO_VERSION}.sha256sum -o /opt/bin/minio.sha256sum && \
-     curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${MINIO_VERSION}.minisig -o /opt/bin/minio.minisig && \
-     curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc -o /opt/bin/mc && \
-     microdnf clean all && \
-     chmod +x /opt/bin/minio && \
-     chmod +x /opt/bin/mc && \
-     chmod +x /usr/bin/docker-entrypoint.sh && \
-     chmod +x /usr/bin/verify-minio.sh && \
-     /usr/bin/verify-minio.sh && \
-     microdnf clean all
 
 ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
 
