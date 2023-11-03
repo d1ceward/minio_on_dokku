@@ -20,6 +20,11 @@ RUN curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archiv
 RUN curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc -o /go/bin/mc && \
     curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc.minisig -o /go/bin/mc.minisig
 
+RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/docker-entrypoint.sh -o /docker-entrypoint.sh
+
+RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CREDITS -o /CREDITS && \
+    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/LICENSE -o /LICENSE
+
 # Verify binary signature using public key "RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGavRUN"
 RUN minisign -Vqm /go/bin/minio -x /go/bin/minio.minisig -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav && \
     minisign -Vqm /go/bin/mc -x /go/bin/mc.minisig -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav
@@ -49,19 +54,14 @@ COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /go/bin/minio /usr/bin/minio
 COPY --from=build /go/bin/mc /usr/bin/mc
 
-RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/docker-entrypoint.sh -o /usr/bin/docker-entrypoint.sh
+COPY --from=build /docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
+RUN chmod +x /usr/bin/docker-entrypoint.sh
 
-RUN \
-    mkdir -p /licenses && \
-    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CREDITS -o /licenses/CREDITS && \
-    curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/LICENSE -o /licenses/LICENSE
+RUN mkdir -p /licenses
+COPY --from=build /CREDITS /licenses/CREDITS
+COPY --from=build /LICENSE /licenses/LICENSE
 
 ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
-
-# Add user/group dokku
-RUN groupadd -g 32767 dokku
-RUN adduser -u 32767 -g dokku dokku
-USER dokku
 
 # Run the server and point to the created directory
 CMD ["server", "--address", ":5000", "--console-address", ":9001", "/data"]

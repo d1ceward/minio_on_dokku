@@ -55,7 +55,7 @@ dokku config:set minio CLIENT_MAX_BODY_SIZE=10M
 To ensure that uploaded data persists between restarts, we create a folder on the host machine, grant write permissions to the user defined in the Dockerfile, and instruct Dokku to mount it to the app container. Follow these steps:
 
 ```bash
-dokku storage:ensure-directory minio
+dokku storage:ensure-directory minio --chown false
 dokku storage:mount minio /var/lib/dokku/data/storage/minio:/data
 ```
 
