@@ -5,7 +5,7 @@ git pull
 echo -e "\033[0;32m====>\033[0m Initial check..."
 
 # Get current release name
-CURRENT_RELEASE=$(git tag | tail -1)
+CURRENT_RELEASE=$(git tag --sort=committerdate | tail -1)
 
 # Get lastest release name
 RELEASE=$(curl --silent "https://api.github.com/repos/minio/minio/releases/latest" | jq -r ".tag_name")
