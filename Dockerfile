@@ -1,7 +1,7 @@
 FROM golang:1.21-alpine as build
 
 ARG TARGETARCH="amd64"
-ARG MINIO_VERSION="RELEASE.2023-11-20T22-40-07Z"
+ARG MINIO_VERSION="RELEASE.2023-12-02T10-51-33Z"
 
 ENV GOPATH /go
 ENV CGO_ENABLED 0
@@ -32,7 +32,7 @@ RUN minisign -Vqm /go/bin/minio -x /go/bin/minio.minisig -P RWTx5Zr1tiHQLwG9keck
 
 FROM registry.access.redhat.com/ubi9/ubi-micro:9.2
 
-ARG MINIO_VERSION="RELEASE.2023-11-20T22-40-07Z"
+ARG MINIO_VERSION="RELEASE.2023-12-02T10-51-33Z"
 
 LABEL name="MinIO" \
       vendor="MinIO Inc <dev@min.io>" \
