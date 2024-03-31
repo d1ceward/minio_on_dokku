@@ -21,6 +21,11 @@ RUN curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc -o /go
     curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc.minisig -o /go/bin/mc.minisig && \
     chmod +x /go/bin/mc
 
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+       curl -L -s -q https://github.com/moparisthebest/static-curl/releases/latest/download/curl-${TARGETARCH} -o /go/bin/curl; \
+       chmod +x /go/bin/curl; \
+    fi
+
 RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/docker-entrypoint.sh -o /docker-entrypoint.sh
 
 RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CREDITS -o /CREDITS && \
@@ -30,7 +35,7 @@ RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CR
 RUN minisign -Vqm /go/bin/minio -x /go/bin/minio.minisig -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav && \
     minisign -Vqm /go/bin/mc -x /go/bin/mc.minisig -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav
 
-FROM registry.access.redhat.com/ubi9/ubi-micro:9.2
+FROM registry.access.redhat.com/ubi9/ubi-micro:latest
 
 ARG MINIO_VERSION="RELEASE.2024-03-26T22-10-45Z"
 
@@ -54,6 +59,7 @@ ENV MINIO_ACCESS_KEY_FILE=access_key \
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /go/bin/minio /usr/bin/minio
 COPY --from=build /go/bin/mc /usr/bin/mc
+COPY --from=build /go/bin/cur* /usr/bin/
 
 COPY --from=build /docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
 RUN chmod +x /usr/bin/docker-entrypoint.sh
@@ -63,6 +69,5 @@ COPY --from=build /CREDITS /licenses/CREDITS
 COPY --from=build /LICENSE /licenses/LICENSE
 
 ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
-
 # Run the server and point to the created directory
 CMD ["server", "--address", ":5000", "--console-address", ":9001", "/data"]
