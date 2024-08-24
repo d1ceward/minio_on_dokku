@@ -11,14 +11,16 @@ RUN apk add -U --no-cache ca-certificates && \
     apk add -U --no-cache curl && \
     go install aead.dev/minisign/cmd/minisign@v0.2.1
 
-# Download minio binary and signature file
+# Download minio binary and signature files
 RUN curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${MINIO_VERSION} -o /go/bin/minio && \
     curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${MINIO_VERSION}.minisig -o /go/bin/minio.minisig && \
+    curl -s -q https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.${MINIO_VERSION}.sha256sum -o /go/bin/minio.sha256sum && \
     chmod +x /go/bin/minio
 
-# Download mc binary and signature file
+# Download mc binary and signature files
 RUN curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc -o /go/bin/mc && \
     curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc.minisig -o /go/bin/mc.minisig && \
+    curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc.sha256sum -o /go/bin/mc.sha256sum && \
     chmod +x /go/bin/mc
 
 RUN if [ "$TARGETARCH" = "amd64" ]; then \
@@ -42,8 +44,8 @@ ARG MINIO_VERSION="RELEASE.2024-08-03T04-33-23Z"
 LABEL name="MinIO" \
       vendor="MinIO Inc <dev@min.io>" \
       maintainer="MinIO Inc <dev@min.io>" \
-      version="${RELEASE}" \
-      release="${RELEASE}" \
+      version="${MINIO_VERSION}" \
+      release="${MINIO_VERSION}" \
       summary="MinIO is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service." \
       description="MinIO object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. MinIO is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads."
 
@@ -58,7 +60,11 @@ ENV MINIO_ACCESS_KEY_FILE=access_key \
 
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /go/bin/minio /usr/bin/minio
+COPY --from=build /go/bin/minio.minisig /usr/bin/minio.minisig
+COPY --from=build /go/bin/minio.sha256sum /usr/bin/minio.sha256sum
 COPY --from=build /go/bin/mc /usr/bin/mc
+COPY --from=build /go/bin/mc.minisig /usr/bin/mc.minisig
+COPY --from=build /go/bin/mc.sha256sum /usr/bin/mc.sha256sum
 COPY --from=build /go/bin/cur* /usr/bin/
 
 COPY --from=build /docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
@@ -69,5 +75,6 @@ COPY --from=build /CREDITS /licenses/CREDITS
 COPY --from=build /LICENSE /licenses/LICENSE
 
 ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
+
 # Run the server and point to the created directory
 CMD ["server", "--address", ":5000", "--console-address", ":9001", "/data"]
