@@ -6,9 +6,12 @@ ARG MINIO_VERSION="RELEASE.2024-09-09T16-59-28Z"
 ENV GOPATH=/go
 ENV CGO_ENABLED=0
 
+WORKDIR /build
+
 # Install curl and minisign
 RUN apk add -U --no-cache ca-certificates && \
     apk add -U --no-cache curl && \
+    apk add -U --no-cache bash && \
     go install aead.dev/minisign/cmd/minisign@v0.2.1
 
 # Download minio binary and signature files
@@ -23,11 +26,6 @@ RUN curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc -o /go
     curl -s -q https://dl.min.io/client/mc/release/linux-${TARGETARCH}/mc.sha256sum -o /go/bin/mc.sha256sum && \
     chmod +x /go/bin/mc
 
-RUN if [ "$TARGETARCH" = "amd64" ]; then \
-       curl -L -s -q https://github.com/moparisthebest/static-curl/releases/latest/download/curl-${TARGETARCH} -o /go/bin/curl; \
-       chmod +x /go/bin/curl; \
-    fi
-
 RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/dockerscripts/docker-entrypoint.sh -o /docker-entrypoint.sh
 
 RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CREDITS -o /CREDITS && \
@@ -36,6 +34,10 @@ RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CR
 # Verify binary signature using public key "RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGavRUN"
 RUN minisign -Vqm /go/bin/minio -x /go/bin/minio.minisig -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav && \
     minisign -Vqm /go/bin/mc -x /go/bin/mc.minisig -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav
+
+COPY dockerscripts/download-static-curl.sh /build/download-static-curl
+RUN chmod +x /build/download-static-curl && \
+    /build/download-static-curl
 
 FROM registry.access.redhat.com/ubi9/ubi-micro:latest
 
@@ -63,7 +65,7 @@ RUN chmod 1777 /usr/bin
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /go/bin/minio* /usr/bin/
 COPY --from=build /go/bin/mc* /usr/bin/
-COPY --from=build /go/bin/cur* /usr/bin/
+COPY --from=build /go/bin/curl* /usr/bin/
 
 COPY --from=build /docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
 RUN chmod +x /usr/bin/docker-entrypoint.sh
