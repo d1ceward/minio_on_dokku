@@ -36,7 +36,7 @@ RUN curl -s -q https://raw.githubusercontent.com/minio/minio/${MINIO_VERSION}/CR
 RUN minisign -Vqm /go/bin/minio -x /go/bin/minio.minisig -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav && \
     minisign -Vqm /go/bin/mc -x /go/bin/mc.minisig -P RWTx5Zr1tiHQLwG9keckT0c45M3AGeHD6IvimQHpyRywVWGbP1aVSGav
 
-RUN chmod +x /download-static-curl && /download-static-curl
+RUN chmod +x /download-static-curl.sh && /download-static-curl.sh
 
 FROM registry.access.redhat.com/ubi9/ubi-micro:latest
 
