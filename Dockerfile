@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine AS build
+FROM golang:1.23-alpine AS build
 
 ARG TARGETARCH="amd64"
 ARG MINIO_VERSION="RELEASE.2024-11-07T00-52-20Z"
